@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-DeployService-45070fca-b550-41e0-9f20-7d2ab50c15b8</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.38" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Office.Interop.Outlook" Version="15.0.4797.1004" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DeployHandler">
+      <HintPath>..\DeployHandler\DeployHandler\DeployHandler\bin\Debug\net8.0\DeployHandler.dll</HintPath>
+    </Reference>
+    <Reference Include="NumaricConnectt.Infra">
+      <HintPath>..\..\..\..\..\Temp\NumarisConnectt\NumarisConnectt.Infra\bin\Debug\net8.0\NumaricConnectt.Infra.dll</HintPath>
+    </Reference>
+    <Reference Include="NumarisConnectt.Api">
+      <HintPath>..\..\..\..\..\Temp\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumarisConnectt.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="NumarisConnectt.Application">
+      <HintPath>..\..\..\..\..\Temp\NumarisConnectt\NumarisConnectt.Application\NumarisConnectt.Application\bin\Debug\net8.0\NumarisConnectt.Application.dll</HintPath>
+    </Reference>
+    <Reference Include="NumarisConnectt.Domain">
+      <HintPath>..\..\..\..\..\Temp\NumarisConnectt\NumarisConnectt.Domain\bin\Debug\net8.0\NumarisConnectt.Domain.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
+
+
+
