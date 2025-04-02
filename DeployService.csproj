@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-DeployService-45070fca-b550-41e0-9f20-7d2ab50c15b8</UserSecretsId>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,19 +25,19 @@
 
   <ItemGroup>
     <Reference Include="DeployHandler">
-      <HintPath>..\..\DeployHandler\DeployHandler\bin\Debug\net8.0\DeployHandler.dll</HintPath>
+      <HintPath>..\..\..\Users\z004r46d\source\repos\DeployHandler\DeployHandler\bin\Debug\net8.0\DeployHandler.dll</HintPath>
     </Reference>
     <Reference Include="NumaricConnectt.Infra">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumaricConnectt.Infra.dll</HintPath>
+      <HintPath>..\..\..\Users\z004r46d\source\repos\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumaricConnectt.Infra.dll</HintPath>
     </Reference>
     <Reference Include="NumarisConnectt.Api">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumarisConnectt.Api.dll</HintPath>
+      <HintPath>..\..\..\Users\z004r46d\source\repos\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumarisConnectt.Api.dll</HintPath>
     </Reference>
     <Reference Include="NumarisConnectt.Application">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumarisConnectt.Application.dll</HintPath>
+      <HintPath>..\..\..\Users\z004r46d\source\repos\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumarisConnectt.Application.dll</HintPath>
     </Reference>
     <Reference Include="NumarisConnectt.Domain">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumarisConnectt.Domain.dll</HintPath>
+      <HintPath>..\..\..\Users\z004r46d\source\repos\Srinikethan97\NumarisConnectt\NumarisConnectt.Application\NumarisConnectt.Application\bin\Debug\net8.0\NumarisConnectt.Domain.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
