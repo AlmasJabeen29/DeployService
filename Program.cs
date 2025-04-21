@@ -1,7 +1,9 @@
-using DeployService;
+using DeployHandler.AccessClass;
+using DeployService.Services;
 using Microsoft.EntityFrameworkCore;
 using NumaricConnectt.Infra.Data;
 using NumaricConnectt.Infra.Repositories;
+using NumarisConnectt.Api.Utilities;
 using NumarisConnectt.Application.Services.Implementations;
 using NumarisConnectt.Application.Services.Interfaces;
 using NumarisConnectt.Domain.Interfaces;
@@ -17,13 +19,22 @@ builder.Services.AddScoped<IBaseLineService, BaseLineService>();
 builder.Services.AddScoped<IHostService,HostService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IScannerService, ScannerService>();
+builder.Services.AddScoped<IAdministratorService, AdministratorService>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IBaselineRepository, BaselineRepository>();
 builder.Services.AddScoped<IHostRepository, HostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IScannerRepository, ScannerRepository>();
+builder.Services.AddScoped<IAdministratorRepository, AdministratorRepository>();
+builder.Services.AddScoped<DeploymentService>();
+builder.Services.AddScoped<RequestStatusUpdater>();
+builder.Services.AddScoped<RequestProcessor>();
+builder.Services.AddScoped<Mailer>();
 
 builder.Services.AddHostedService<NumarisWorker>();
+
+
+
 Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().
     WriteTo.Console().WriteTo
     .File(AppDomain.CurrentDomain.BaseDirectory+"logs/DeployService.txt", rollingInterval: RollingInterval.Day).CreateLogger();
