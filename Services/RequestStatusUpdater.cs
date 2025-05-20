@@ -15,7 +15,7 @@ namespace DeployService.Services
             _logger = logger;
         }
 
-        public async Task UpdateRequestStatusAsync(RequestDto request, string status)
+        public async Task UpdateRequestStatusAsync(RequestDto request, Status status)
         {
             request.Status = status;
             var updateResult = await _requestService.UpdateRequestAsync(request);

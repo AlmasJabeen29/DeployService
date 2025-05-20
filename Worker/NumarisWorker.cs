@@ -1,7 +1,7 @@
 
 using System.Runtime.Versioning;
 using DeployService.Services;
-using NumarisConnectt.Api.Utilities;
+using DeployService.Utilities;
 using NumarisConnectt.Application.DataTransferObjects.RetrievalDtos;
 
 public class NumarisWorker : BackgroundService
@@ -46,13 +46,17 @@ public class NumarisWorker : BackgroundService
             var deploymentService = scope.ServiceProvider.GetRequiredService<DeploymentService>();
             var requestStatusUpdater = scope.ServiceProvider.GetRequiredService<RequestStatusUpdater>();
             var mailer = scope.ServiceProvider.GetRequiredService<Mailer>();
+            await mailer.SendEmailOnRequestSubmission(request);
 
+            await Task.Delay(1000); // Simulate some processing delay
             var (user, host, scanner, baseline) = await requestProcessor.RetrieveRequestDataAsync(request);
 
             if (user != null && host != null && scanner != null && baseline != null)
             {
-                await deploymentService.InstallNumarisAsync(scanner, host, baseline);
-                await requestStatusUpdater.UpdateRequestStatusAsync(request, "Completed");
+                await requestStatusUpdater.UpdateRequestStatusAsync(request, Status.OnGoing);
+                await Task.Delay(3000); // Simulate some processing delay
+                //await deploymentService.InstallNumarisAsync(scanner, host, baseline);
+                await requestStatusUpdater.UpdateRequestStatusAsync(request,Status.Completed);
                 await mailer.SendEmailOnSuccessfulInstallation(request);
             }
             else
