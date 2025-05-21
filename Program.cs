@@ -1,4 +1,5 @@
 
+using DeployService.Clients;
 using DeployService.Services;
 using DeployService.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IScannerRepository, ScannerRepository>();
 builder.Services.AddScoped<IAdministratorRepository, AdministratorRepository>();
 builder.Services.AddScoped<DeploymentService>();
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7073") }); //Point this uri to your API url.
+builder.Services.AddScoped<RequestApiClient>();
 builder.Services.AddScoped<RequestStatusUpdater>();
 builder.Services.AddScoped<RequestProcessor>();
 builder.Services.AddScoped<Mailer>();

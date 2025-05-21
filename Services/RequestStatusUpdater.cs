@@ -1,33 +1,33 @@
-﻿using NumarisConnectt.Application.DataTransferObjects.RetrievalDtos;
-using NumarisConnectt.Application.Services.Interfaces;
+﻿using DeployService.Clients;
+using NumarisConnectt.Application.DataTransferObjects.RetrievalDtos;
 
 
 namespace DeployService.Services
 {
     public class RequestStatusUpdater
     {
-        private readonly IRequestService _requestService;
+        private readonly RequestApiClient _requestApiClient;
         private readonly ILogger<RequestStatusUpdater> _logger;
 
-        public RequestStatusUpdater(IRequestService requestService, ILogger<RequestStatusUpdater> logger)
+        public RequestStatusUpdater(RequestApiClient requestApiClient, ILogger<RequestStatusUpdater> logger)
         {
-            _requestService = requestService;
+           _requestApiClient = requestApiClient;
             _logger = logger;
         }
 
         public async Task UpdateRequestStatusAsync(RequestDto request, Status status)
         {
             request.Status = status;
-            var updateResult = await _requestService.UpdateRequestAsync(request);
-
-            if (updateResult != null)
+            try
             {
+                await _requestApiClient.UpdateRequestAsync(request);
                 _logger.LogInformation("Request status updated successfully: {0}", request.Id);
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogError("Failed to update request status.");
+                _logger.LogError(ex, "Failed to update request status for request ID: {0}", request.Id);
             }
+
         }
     }
 
