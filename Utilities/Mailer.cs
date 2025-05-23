@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Outlook;
+﻿using DeployService.Clients;
+using Microsoft.Office.Interop.Outlook;
 using NumarisConnectt.Application.DataTransferObjects.RetrievalDtos;
 using NumarisConnectt.Application.Services.Interfaces;
 using System.Runtime.Versioning;
@@ -8,12 +9,12 @@ namespace DeployService.Utilities
 {
     public class Mailer
     {
-        private readonly IAdministratorService _administratorService;
+        private readonly ApiClient _ApiClient;
         private readonly RequestProcessor _requestProcessor;
 
-        public Mailer(IAdministratorService administratorService, RequestProcessor requestProcessor)
+        public Mailer(ApiClient ApiClient, RequestProcessor requestProcessor)
         {
-            _administratorService = administratorService;
+            _ApiClient = ApiClient;
             _requestProcessor = requestProcessor;
         }
 
@@ -56,17 +57,17 @@ namespace DeployService.Utilities
         public async Task SendEmailOnRequestSubmission(RequestDto request)
         {
             var (user, host, scanner, baseline) = await _requestProcessor.RetrieveRequestDataAsync(request);
-            var testLabAdmins = await _administratorService.GetAdminsAsync("TestLab");
+            var testLabAdmins = await _ApiClient.GetAdminstratorsAsync("TestLab");
 
             // Email to User and Test Lab Admins
             string subject = $"Numaris Installation request id {request.Id} submitted.";
             string body = $"Dear User, \r\n\r\nYour request for Numaris Installation has been submitted successfully. Your request Id is {request.Id}. \r\n\r\nRegards, \r\n\r\nNumarisConnectt Support";
-            SendEmail(subject, body, user.Email, testLabAdmins.Value.Select(a => a.Email).ToList());
+            SendEmail(subject, body, user.Email, testLabAdmins.Select(a => a.Email).ToList());
 
             // Email to Factory Admins if applicable
             if (host?.Location == "Factory")
             {
-                var factoryAdmins = await _administratorService.GetAdminsAsync("Factory");
+                var factoryAdmins = await _ApiClient.GetAdminstratorsAsync("Factory");
                 body = $"Dear Factory Admin, \r\n\r\nA request for Numaris Installation has been submitted successfully. Below are the details: \r\n\r\n" +
                        $"Request ID: {request.Id}  \r\n" +
                        $"Username: {user.UserName} \r\n" +
@@ -77,7 +78,7 @@ namespace DeployService.Utilities
                        $"Baseline: {baseline.Baseline} \r\n" +
                        $"Hostname: {host.HostName} \r\n\r\n" +
                        "Regards, \r\n\r\nNumarisConnectt Support";
-                SendEmail(subject, body, string.Join(";", factoryAdmins.Value.Select(a => a.Email).ToList()));
+                SendEmail(subject, body, string.Join(";", factoryAdmins.Select(a => a.Email).ToList()));
             }
         }
 
@@ -85,21 +86,21 @@ namespace DeployService.Utilities
         public async Task SendEmailOnSuccessfulInstallation(RequestDto request)
         {
             var (user, host, scanner, baseline) = await _requestProcessor.RetrieveRequestDataAsync(request);
-            var testLabAdmins = await _administratorService.GetAdminsAsync("TestLab");
+            var testLabAdmins = await _ApiClient.GetAdminstratorsAsync("TestLab");
 
             // Email to User and Test Lab Admins
             string subject = $"Numaris Installation with request id {request.Id} is completed";
             string body = $"Dear User, \r\n\r\nThe Numaris Installation with request {request.Id} is completed. \r\n\r\nRegards, \r\n\r\nNumarisConnectt Support";
-            SendEmail(subject, body, user.Email, testLabAdmins.Value.Select(a => a.Email).ToList());
+            SendEmail(subject, body, user.Email, testLabAdmins.Select(a => a.Email).ToList());
 
             // Email to Factory Admins if applicable
             if (host?.Location == "Factory")
             {
-                var factoryAdmins = await _administratorService.GetAdminsAsync("Factory");
+                var factoryAdmins = await _ApiClient.GetAdminstratorsAsync("Factory");
                 body = $"Dear Factory Admin, \r\n\r\nThe Numaris Installation with request id {request.Id} is completed. \r\n\r\n" +
                        $"The host {host.HostName} is occupied with the baseline {baseline.Baseline} \r\n\r\n" +
                        "Regards, \r\n\r\nNumarisConnectt Support";
-                SendEmail(subject, body, string.Join(";", factoryAdmins.Value.Select(a => a.Email).ToList()));
+                SendEmail(subject, body, string.Join(";", factoryAdmins.Select(a => a.Email).ToList()));
             }
         }
 

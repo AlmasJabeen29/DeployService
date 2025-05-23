@@ -6,12 +6,12 @@ namespace DeployService.Services
 {
     public class RequestStatusUpdater
     {
-        private readonly RequestApiClient _requestApiClient;
+        private readonly ApiClient _ApiClient;
         private readonly ILogger<RequestStatusUpdater> _logger;
 
-        public RequestStatusUpdater(RequestApiClient requestApiClient, ILogger<RequestStatusUpdater> logger)
+        public RequestStatusUpdater(ApiClient ApiClient, ILogger<RequestStatusUpdater> logger)
         {
-           _requestApiClient = requestApiClient;
+           _ApiClient = ApiClient;
             _logger = logger;
         }
 
@@ -20,7 +20,7 @@ namespace DeployService.Services
             request.Status = status;
             try
             {
-                await _requestApiClient.UpdateRequestAsync(request);
+                await _ApiClient.UpdateRequestAsync(request);
                 _logger.LogInformation("Request status updated successfully: {0}", request.Id);
             }
             catch (Exception ex)
