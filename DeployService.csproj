@@ -25,19 +25,19 @@
 
   <ItemGroup>
     <Reference Include="DeployHandler">
-      <HintPath>..\..\DeployHandler\DeployHandler\bin\Debug\net8.0\DeployHandler.dll</HintPath>
+      <HintPath>Dependencies\DeployHandler.dll</HintPath>
     </Reference>
     <Reference Include="NumaricConnectt.Infra">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Infra\bin\Debug\net8.0\NumaricConnectt.Infra.dll</HintPath>
+      <HintPath>Dependencies\NumaricConnectt.Infra.dll</HintPath>
     </Reference>
     <Reference Include="NumarisConnectt.Api">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Api\bin\Debug\net8.0\NumarisConnectt.Api.dll</HintPath>
+      <HintPath>Dependencies\NumarisConnectt.Api.dll</HintPath>
     </Reference>
     <Reference Include="NumarisConnectt.Application">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Application\NumarisConnectt.Application\bin\Debug\net8.0\NumarisConnectt.Application.dll</HintPath>
+      <HintPath>Dependencies\NumarisConnectt.Application.dll</HintPath>
     </Reference>
     <Reference Include="NumarisConnectt.Domain">
-      <HintPath>..\..\Srinikethan97\NumarisConnectt\NumarisConnectt.Application\NumarisConnectt.Application\bin\Debug\net8.0\NumarisConnectt.Domain.dll</HintPath>
+      <HintPath>Dependencies\NumarisConnectt.Domain.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

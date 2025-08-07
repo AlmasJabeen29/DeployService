@@ -55,13 +55,21 @@ namespace DeployService.Utilities
         [SupportedOSPlatform("windows")]
         public async Task SendEmailOnRequestSubmission(RequestDto request)
         {
-            var (user, host, scanner, baseline) = await _requestProcessor.RetrieveRequestDataAsync(request);
+            var (user, host, scanner, baseline,assignee) = await _requestProcessor.RetrieveRequestDataAsync(request);
             var testLabAdmins = await _administratorService.GetAdminsAsync("TestLab");
+
+            //Prepare CC List
+            List<string> ccList = new();
+            if (assignee != null && !string.IsNullOrWhiteSpace(assignee.Email))
+            {
+                ccList.Add(assignee.Email);
+            }
+            ccList.AddRange(testLabAdmins.Value.Select(a => a.Email).ToList());
 
             // Email to User and Test Lab Admins
             string subject = $"Numaris Installation request id {request.Id} submitted.";
             string body = $"Dear User, \r\n\r\nYour request for Numaris Installation has been submitted successfully. Your request Id is {request.Id}. \r\n\r\nRegards, \r\n\r\nNumarisConnectt Support";
-            SendEmail(subject, body, user.Email, testLabAdmins.Value.Select(a => a.Email).ToList());
+            SendEmail(subject, body, user.Email, ccList);
 
             // Email to Factory Admins if applicable
             if (host?.Location == "Factory")
@@ -84,13 +92,21 @@ namespace DeployService.Utilities
         [SupportedOSPlatform("windows")]
         public async Task SendEmailOnSuccessfulInstallation(RequestDto request)
         {
-            var (user, host, scanner, baseline) = await _requestProcessor.RetrieveRequestDataAsync(request);
+            var (user, host, scanner, baseline,assignee) = await _requestProcessor.RetrieveRequestDataAsync(request);
             var testLabAdmins = await _administratorService.GetAdminsAsync("TestLab");
+
+            //Prepare CC List
+            List<string> ccList = new();
+            if (assignee != null && !string.IsNullOrWhiteSpace(assignee.Email))
+            {
+                ccList.Add(assignee.Email);
+            }
+            ccList.AddRange(testLabAdmins.Value.Select(a => a.Email).ToList());
 
             // Email to User and Test Lab Admins
             string subject = $"Numaris Installation with request id {request.Id} is completed";
             string body = $"Dear User, \r\n\r\nThe Numaris Installation with request {request.Id} is completed. \r\n\r\nRegards, \r\n\r\nNumarisConnectt Support";
-            SendEmail(subject, body, user.Email, testLabAdmins.Value.Select(a => a.Email).ToList());
+            SendEmail(subject, body, user.Email, ccList);
 
             // Email to Factory Admins if applicable
             if (host?.Location == "Factory")

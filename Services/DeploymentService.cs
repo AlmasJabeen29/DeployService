@@ -16,9 +16,11 @@ namespace DeployService.Services
         public Task InstallNumarisAsync(ScannerDto scanner, HostDto host, BaseLineDto baseline)
         {
             _deployAccess.CreateUnattendedDeployment(
-                host,
-                baseline,
-                scanner,
+                host.HostName,
+                host.IpAddress,
+                host.MacAddress,
+                baseline.Baseline,
+                scanner.Name,
                 DeployAccess.DeploymentPackageType.MRAWP,
                 true,
                 null!,

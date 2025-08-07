@@ -49,13 +49,13 @@ public class NumarisWorker : BackgroundService
             await mailer.SendEmailOnRequestSubmission(request);
 
             await Task.Delay(1000); // Simulate some processing delay
-            var (user, host, scanner, baseline) = await requestProcessor.RetrieveRequestDataAsync(request);
+            var (user, host, scanner, baseline,assignee) = await requestProcessor.RetrieveRequestDataAsync(request);
 
             if (user != null && host != null && scanner != null && baseline != null)
             {
                 await requestStatusUpdater.UpdateRequestStatusAsync(request, Status.OnGoing);
                 await Task.Delay(3000); // Simulate some processing delay
-                //await deploymentService.InstallNumarisAsync(scanner, host, baseline);
+                await deploymentService.InstallNumarisAsync(scanner, host, baseline);
                 await requestStatusUpdater.UpdateRequestStatusAsync(request,Status.Completed);
                 await mailer.SendEmailOnSuccessfulInstallation(request);
             }
