@@ -35,14 +35,19 @@ namespace DeployService.Utilities
                 : new List<RequestDto>();
         }
 
-        public async Task<(UserDto? User, HostDto? Host, ScannerDto? Scanner, BaseLineDto? Baseline)> RetrieveRequestDataAsync(RequestDto request)
+        public async Task<(UserDto? User, HostDto? Host, ScannerDto? Scanner, BaseLineDto? Baseline,UserDto? Assignee)> RetrieveRequestDataAsync(RequestDto request)
         {
             var user = (await _userService.GetUserByIdAsync(request.UserId)).Value;
             var scanner = (await _scannerService.GetScannerByIdAsync(request.ScannerId)).Value;
             var host = (await _hostService.GetHostByIdAsync(request.HostId)).Value;
             var baseline = (await _baselineService.GetBaseLineByIdAsync(request.BaselineId)).Value;
+            if(request.AssigneeId == null)
+            {
+                return (user, host, scanner, baseline, null);
+            }
+            var assignee = (await _userService.GetUserByIdAsync((int)request.AssigneeId)).Value;
 
-            return (user, host, scanner, baseline);
+            return (user, host, scanner, baseline,assignee);
         }
     }
 }
