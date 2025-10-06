@@ -1,69 +1,113 @@
-
-using System.Runtime.Versioning;
+﻿using DeployHandler.AccessClass;
+using DeployService.Clients;
 using DeployService.Services;
 using DeployService.Utilities;
 using NumarisConnectt.Application.DataTransferObjects.RetrievalDtos;
+using System.Runtime.Versioning;
+
 
 public class NumarisWorker : BackgroundService
 {
     private readonly ILogger<NumarisWorker> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly BackupManager _backupManager;
 
     public NumarisWorker(
         ILogger<NumarisWorker> logger,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider, BackupManager backupManager)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _backupManager = backupManager;
     }
 
     [SupportedOSPlatform("windows")]
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        _logger.LogInformation("NumarisWorker ExecuteAsync started at: {time}", DateTime.Now);
+        await _backupManager.LoadAllBackupsAsync();
+        try
         {
-            _logger.LogInformation("Checking for new requests at: {time}", DateTime.Now);
-
-            using (var scope = _serviceProvider.CreateScope())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var requestProcessor = scope.ServiceProvider.GetRequiredService<RequestProcessor>();
-                var newRequests = await requestProcessor.GetNewRequestsAsync();
+                _logger.LogInformation("Checking for new requests at: {time}", DateTime.Now);
 
-                foreach (var request in newRequests)
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    await ProcessRequestAsync(request, scope.ServiceProvider);
+                    var requestProcessor = scope.ServiceProvider.GetRequiredService<RequestProcessor>();
+                    var newRequests = await requestProcessor.GetNewRequestsAsync();
+
+                    foreach (var request in newRequests)
+                    {
+                        await ProcessRequestAsync(request, scope.ServiceProvider);
+                    }
                 }
             }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled exception in ExecuteAsync.");
+        }
+        _logger.LogInformation("NumarisWorker ExecuteAsync stopped at: {time}", DateTime.Now);
     }
 
     [SupportedOSPlatform("windows")]
     private async Task ProcessRequestAsync(RequestDto request, IServiceProvider serviceProvider)
     {
-        using (var scope = serviceProvider.CreateScope())
+        _logger.LogInformation("Processing request {0}", request.Id);
+        try
         {
-            var requestProcessor = scope.ServiceProvider.GetRequiredService<RequestProcessor>();
-            var deploymentService = scope.ServiceProvider.GetRequiredService<DeploymentService>();
-            var requestStatusUpdater = scope.ServiceProvider.GetRequiredService<RequestStatusUpdater>();
-            var mailer = scope.ServiceProvider.GetRequiredService<Mailer>();
-            await mailer.SendEmailOnRequestSubmission(request);
-
-            await Task.Delay(1000); // Simulate some processing delay
-            var (user, host, scanner, baseline,assignee) = await requestProcessor.RetrieveRequestDataAsync(request);
-
-            if (user != null && host != null && scanner != null && baseline != null)
+            using (var scope = serviceProvider.CreateScope())
             {
-                await requestStatusUpdater.UpdateRequestStatusAsync(request, Status.OnGoing);
-                await Task.Delay(3000); // Simulate some processing delay
-                await deploymentService.InstallNumarisAsync(scanner, host, baseline);
-                await requestStatusUpdater.UpdateRequestStatusAsync(request,Status.Completed);
-                await mailer.SendEmailOnSuccessfulInstallation(request);
-            }
-            else
-            {
-                _logger.LogError("Failed to retrieve required data for request: {0}", request.Id);
+                var requestProcessor = scope.ServiceProvider.GetRequiredService<RequestProcessor>();
+                var deploymentService = scope.ServiceProvider.GetRequiredService<DeploymentService>();
+                var requestStatusUpdater = scope.ServiceProvider.GetRequiredService<RequestStatusUpdater>();
+                var mailer = scope.ServiceProvider.GetRequiredService<Mailer>();
+                await mailer.SendEmailOnRequestSubmission(request);
+
+                await Task.Delay(1000); // Simulate some processing delay
+                var (user, host, scanner, baseline, assignee) = await requestProcessor.RetrieveRequestDataAsync(request);
+
+                if (user != null && host != null && scanner != null && baseline != null)
+                {
+                    await requestStatusUpdater.UpdateRequestStatusAsync(request, Status.OnGoing);
+                    await Task.Delay(3000); // Simulate some processing delay
+                    try
+                    {
+                        BackupDto? backup = _backupManager.GetBackup(baseline.Baseline, scanner.Name);
+                        await deploymentService.InstallNumarisAsync(scanner, host, baseline, backup);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError("Error : ", ex);
+                        await requestStatusUpdater.UpdateRequestStatusAsync(request, Status.Failed);
+                        throw;
+                    }
+                    
+                    await requestStatusUpdater.UpdateRequestStatusAsync(request, Status.Completed);
+                    await mailer.SendEmailOnSuccessfulInstallation(request);
+                }
+                else
+                {
+                    _logger.LogError("Failed to retrieve required data for request: {0}", request.Id);
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while processing request {RequestId}", request.Id);
+        }
+    }
+
+    private BackupDto? GetBackup(List<BackupDto> backups, string baseline, string systemType)
+    {
+        // Example: baseline = "nxfull.2025036.1" → take "nxfull"
+        string branch = baseline.Split('.')[0];
+
+        // Find the one matching backup (case-insensitive)
+        return backups.FirstOrDefault(b =>
+            b.Name.Contains(branch, StringComparison.OrdinalIgnoreCase) &&
+            b.Name.Contains(systemType, StringComparison.OrdinalIgnoreCase));
     }
 }
 

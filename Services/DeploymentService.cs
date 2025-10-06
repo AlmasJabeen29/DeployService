@@ -7,27 +7,42 @@ namespace DeployService.Services
     public class DeploymentService
     {
         private readonly DeployAccess _deployAccess;
+        private readonly ILogger<DeploymentService> _logger;
 
-        public DeploymentService()
+        public DeploymentService(ILogger<DeploymentService> logger, ILogger<DeployAccess> deployAccessLogger, string deployServerIp)
         {
-            _deployAccess = new DeployAccess("172.24.70.8");
+            _logger = logger;
+            _deployAccess = new DeployAccess(deployServerIp,deployAccessLogger);
+            
         }
 
-        public Task InstallNumarisAsync(ScannerDto scanner, HostDto host, BaseLineDto baseline)
+        public Task InstallNumarisAsync(ScannerDto scanner, HostDto host, BaseLineDto baseline, BackupDto? backup)
         {
-            _deployAccess.CreateUnattendedDeployment(
-                host.HostName,
-                host.IpAddress,
-                host.MacAddress,
-                baseline.Baseline,
-                scanner.Name,
-                DeployAccess.DeploymentPackageType.MRAWP,
-                true,
-                null!,
-                null!,
-                DeployAccess.SystemVariant.ExFactory
-            );
+            _logger.LogInformation("Starting InstallNumarisAsync for host: {HostName}", host.HostName);
+            try
+            {
+                _deployAccess.CreateUnattendedDeployment(
+                    host.HostName,
+                    host.IpAddress,
+                    host.MacAddress,
+                    baseline.Baseline,
+                    scanner.Name,
+                    DeployAccess.DeploymentPackageType.MRAWP,
+                    true,
+                    null!,
+                    null!,
+                    DeployAccess.SystemVariant.ExFactory,
+                    null,
+                    backup?.Name! 
+                );
 
+                _logger.LogInformation("Completed InstallNumarisAsync for host: {HostName}", host.HostName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during InstallNumarisAsync for host: {HostName}", host.HostName);
+                throw;
+            }
             return Task.CompletedTask;
         }
     }
