@@ -23,7 +23,7 @@ public class BackupManager
 
     public BackupDto? GetBackup(string baseline, string systemType)
     {
-        string branch = baseline.Split('.')[0];
+        string branch = baseline.Split('_')[0];
         return _backups.FirstOrDefault(b =>
             b.Name.Contains(branch, StringComparison.OrdinalIgnoreCase) &&
             b.Name.Contains(systemType, StringComparison.OrdinalIgnoreCase));
