@@ -28,10 +28,9 @@ public class NumarisWorker : BackgroundService
         await _backupManager.LoadAllBackupsAsync();
         try
         {
+            _logger.LogInformation("Checking for new requests at: {time}", DateTime.Now);
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Checking for new requests at: {time}", DateTime.Now);
-
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var requestProcessor = scope.ServiceProvider.GetRequiredService<RequestProcessor>();
@@ -99,16 +98,6 @@ public class NumarisWorker : BackgroundService
         }
     }
 
-    private BackupDto? GetBackup(List<BackupDto> backups, string baseline, string systemType)
-    {
-        // Example: baseline = "nxfull.2025036.1" → take "nxfull"
-        string branch = baseline.Split('.')[0];
-
-        // Find the one matching backup (case-insensitive)
-        return backups.FirstOrDefault(b =>
-            b.Name.Contains(branch, StringComparison.OrdinalIgnoreCase) &&
-            b.Name.Contains(systemType, StringComparison.OrdinalIgnoreCase));
-    }
 }
 
 
