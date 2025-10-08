@@ -78,7 +78,6 @@ public class NumarisWorker : BackgroundService
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError("Error : ", ex);
                         await requestStatusUpdater.UpdateRequestStatusAsync(request, Status.Failed);
                         throw;
                     }

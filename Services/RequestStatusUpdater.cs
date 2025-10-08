@@ -21,7 +21,7 @@ namespace DeployService.Services
             try
             {
                 await _requestApiClient.UpdateRequestAsync(request);
-                _logger.LogInformation("Request status updated successfully: {0}", request.Id);
+                _logger.LogInformation($"Request status updated successfully for id {request.Id} : {request.Status.ToString()}");
             }
             catch (Exception ex)
             {

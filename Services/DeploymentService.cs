@@ -18,7 +18,7 @@ namespace DeployService.Services
 
         public Task InstallNumarisAsync(ScannerDto scanner, HostDto host, BaseLineDto baseline, BackupDto? backup)
         {
-            _logger.LogInformation("Starting InstallNumarisAsync for host: {HostName}", host.HostName);
+            _logger.LogInformation("Starting Numaris Installation for host: {HostName}", host.HostName);
             try
             {
                 _deployAccess.CreateUnattendedDeployment(
@@ -36,11 +36,11 @@ namespace DeployService.Services
                     backup?.Name! 
                 );
 
-                _logger.LogInformation("Completed InstallNumarisAsync for host: {HostName}", host.HostName);
+                _logger.LogInformation("Completed numaris installation for host: {HostName}", host.HostName);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred during InstallNumarisAsync for host: {HostName}", host.HostName);
+                _logger.LogError(ex, "Error occurred during numaris installation for host: {HostName}", host.HostName);
                 throw;
             }
             return Task.CompletedTask;
