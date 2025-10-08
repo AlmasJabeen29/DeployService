@@ -49,10 +49,15 @@ builder.Services.AddHostedService<NumarisWorker>();
 
 
 
-//Log.Logger = new LoggerConfiguration().
-//    WriteTo.Console().WriteTo
-//    .File(AppDomain.CurrentDomain.BaseDirectory+"logs/DeployService.txt", rollingInterval: RollingInterval.Day).CreateLogger();
-//builder.Logging.Services.AddSerilog();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information() // Default minimum level
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", Serilog.Events.LogEventLevel.Error)
+    .WriteTo.Console()
+    .WriteTo.File(AppDomain.CurrentDomain.BaseDirectory + "logs/DeployService.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Logging.Services.AddSerilog();
 builder.Services.AddWindowsService(options=>
 {
     options.ServiceName = "Deploy Service";
